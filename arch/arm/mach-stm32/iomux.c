@@ -320,14 +320,29 @@ void __init stm32_iomux_init(void)
 		 * Pin configuration for the UARTs.
 		 */
 #if defined(CONFIG_STM32_USART3)
-		gpio_dsc.port = 2;
+		gpio_dsc.port = 1;
 		gpio_dsc.pin  = 10;
 		stm32f2_gpio_config(&gpio_dsc, STM32F2_GPIO_ROLE_USART3);
 
-		gpio_dsc.port = 2;
+		gpio_dsc.port = 1;
 		gpio_dsc.pin  = 11;
 		stm32f2_gpio_config(&gpio_dsc, STM32F2_GPIO_ROLE_USART3);
 #endif
+
+#if defined(CONFIG_MMC_ARMMMCI) || defined(CONFIG_MMC_ARMMMCI_MODULE)
+		do {
+			static struct stm32f2_gpio_dsc sdcard_gpio[] = {
+				{2,  8}, {2,  9}, {2, 10}, {2, 11},
+				{2, 12}, {3,  2}
+			};
+			int	i;
+
+			for (i = 0; i < ARRAY_SIZE(sdcard_gpio); i++) {
+				stm32f2_gpio_config(&sdcard_gpio[i],
+						    STM32F2_GPIO_ROLE_SDIO);
+			}
+		} while (0);
+#endif /* CONFIG_MMC_ARMMMCI */
 
 		/*
 		 * Pin configuration for the User LED of the STM32F429ZI-DISCO board.
